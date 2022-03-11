@@ -1,0 +1,60 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Megalodon",
+            "type": "shell",
+            // Megalodon does not print the input file path.
+            // The file path is echoed so that it can be retrieved from the output by a problem matcher.
+            "command": "echo File: ${file} && megalodon ${file}",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "revealProblems": "onProblem",
+                "clear": true
+            },
+            "problemMatcher": [
+                {
+                    "owner": "megalodon",
+                    "source": "Megalodon",
+                    "fileLocation": "absolute",
+                    "pattern": [
+                        {
+                            "regexp": "^File: (.*)$",
+                            "file": 1
+                        },
+                        {
+                            "regexp": "^(.*) between line (\\d+) char (\\d+) and line (\\d+) char (\\d+):$",
+                            "message": 1,
+                            "line": 2,
+                            "column": 3,
+                            "endLine": 4,
+                            "endColumn": 5
+                        }
+                    ]
+                },
+                {
+                    "owner": "megalodon",
+                    "source": "Megalodon",
+                    "fileLocation": "absolute",
+                    "pattern": [
+                        {
+                            "regexp": "^File: (.*)$",
+                            "file": 1
+                        },
+                        {
+                            "regexp": "^Failure at line (\\d+) char (\\d+): (.*)$",
+                            "line": 1,
+                            "column": 2,
+                            "message": 3
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
