@@ -8,7 +8,7 @@
             "type": "shell",
             // Megalodon does not print the input file path.
             // The file path is echoed so that it can be retrieved from the output by a problem matcher.
-            "command": "echo File: ${file} && megalodon ${file}",
+            "command": "echo File: ${file} && megalodon -owned $(dirname $(which megalodon))/../examples/${config:megalodon.owned} ${file}",
             "group": {
                 "kind": "build",
                 "isDefault": true
