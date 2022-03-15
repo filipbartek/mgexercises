@@ -59,11 +59,20 @@ Axiom setminusE:forall X Y z, (z :e X :\: Y) -> z :e X /\ z /:e Y.
 Axiom setminusE1:forall X Y z, (z :e X :\: Y) -> z :e X.
 
 Theorem setminus_antimonotone : forall A U V, U c= V -> A :\: V c= A :\: U.
-let A U V. assume HUV.
-let x. assume Hx. apply setminusE A V x Hx.
-assume H1 H2. apply setminusI.
-- exact H1.
-- assume H3: x :e U.
+let A U V. assume HUV: U c= V.
+let x. assume Hx: x :e A :\: V.
+prove x :e A :\: U.
+apply setminusE A V x Hx.
+prove x :e A -> x /:e V -> x :e A :\: U.
+assume H1: x :e A.
+assume H2: x /:e V.
+prove x :e A :\: U.
+apply setminusI.
+- prove x :e A.
+  exact H1.
+- prove x /:e U.
+  assume H3: x :e U.
+  prove False.
   apply H2.
   prove x :e V.
   exact HUV x H3.
@@ -83,13 +92,16 @@ let y.
 assume Hy: y :e {f x|x :e U}.
 prove y :e {f x|x :e V}.
 apply ReplE_impred U f y Hy.
+prove forall x:set, x :e U -> y = f x -> y :e {f x|x :e V}.
 let x.
 assume Hx: x :e U.
 assume H1: y = f x.
 prove y :e {f x|x :e V}.
 rewrite H1.
 prove f x :e {f x|x :e V}.
-admit. (** fill in the rest of this proof **)
+apply ReplI V f x.
+prove x :e V.
+exact HUV x Hx.
 Qed.
 
 (* Unicode Power "1D4AB" *)
@@ -99,10 +111,26 @@ Axiom PowerI : forall X Y:set, Y c= X -> Y :e Power X.
 Axiom PowerE : forall X Y:set, Y :e Power X -> Y c= X.
 
 Theorem image_In_Power : forall A B, forall f:set -> set, (forall x :e A, f x :e B) -> forall U :e Power A, {f x|x :e U} :e Power B.
-let A B f. assume Hf.
-let U. assume HU: U :e Power A.
+let A B f.
+assume Hf: forall x :e A, f x :e B.
+let U.
+assume HU: U :e Power A.
 prove {f x|x :e U} :e Power B.
 apply PowerI.
 prove {f x|x :e U} c= B.
-admit. (** fill in the rest of this proof **)
+let fx.
+prove fx :e {f x|x :e U} -> fx :e B.
+assume Hfx: fx :e {f x|x :e U}.
+prove fx :e B.
+apply ReplE_impred U f fx Hfx.
+prove forall x:set, x :e U -> fx = f x -> fx :e B.
+let x.
+assume HxU: x :e U.
+assume Hfxfx: fx = f x.
+prove fx :e B.
+rewrite Hfxfx.
+prove f x :e B.
+apply Hf x.
+prove x :e A.
+exact PowerE A U HU x HxU.
 Qed.
