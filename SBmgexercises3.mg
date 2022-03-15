@@ -138,6 +138,7 @@ let A B f g.
 assume Hf: inj A B f.
 assume Hg: inj B A g.
 prove equip A B.
+(** Break the conjunction Hf down into its components. **)
 apply Hf.
 assume Hf1: forall u :e A, f u :e B.
 assume Hf2: forall u v :e A, f u = f v -> u = v.
@@ -154,14 +155,15 @@ claim L2: forall U V :e Power A, U c= V -> Phi U c= Phi V.
   assume HUV: U c= V.
   prove Phi U c= Phi V.
   prove {g y|y :e B :\: {f x|x :e A :\: U}} c= {g y|y :e B :\: {f x|x :e A :\: V}}.
-  apply image_monotone g.
+  (** Megalodon automatically matches the lemma conclusion with the goal, instantiating the premises. **)
+  apply image_monotone.
   prove B :\: {f x|x :e A :\: U} c= B :\: {f x|x :e A :\: V}.
   apply setminus_antimonotone.
   prove {f x|x :e A :\: V} c= {f x|x :e A :\: U}.
   admit. (** fill in this subproof **)
 }
 apply KnasterTarski_set A Phi L1 L2.
-let Y. assume H1. apply H1.
+let Y. assume HY. apply HY.
 assume H1: Y :e Power A.
 assume H2: Phi Y = Y.
 set h : set -> set := fun x => if x :e Y then inv B g x else f x.
