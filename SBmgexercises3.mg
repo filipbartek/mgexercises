@@ -149,7 +149,10 @@ claim L1: forall U :e Power A, Phi U :e Power A.
 { admit. (** fill in this subproof **)
 }
 claim L2: forall U V :e Power A, U c= V -> Phi U c= Phi V.
-{ let U. assume HU. let V. assume HV HUV.
+{ let U. assume HU: U :e Power A.
+  let V. assume HV: V :e Power A.
+  assume HUV: U c= V.
+  prove Phi U c= Phi V.
   prove {g y|y :e B :\: {f x|x :e A :\: U}} c= {g y|y :e B :\: {f x|x :e A :\: V}}.
   apply image_monotone g.
   prove B :\: {f x|x :e A :\: U} c= B :\: {f x|x :e A :\: V}.
@@ -164,8 +167,10 @@ assume H2: Phi Y = Y.
 set h : set -> set := fun x => if x :e Y then inv B g x else f x.
 prove exists f:set -> set, bij A B f.
 witness h.
+prove bij A B h.
 apply bijI.
-- let x. assume Hx.
+- prove forall x :e A, h x :e B.  (** h(A) c= B **)
+  let x. assume Hx.
   prove (if x :e Y then inv B g x else f x) :e B.
   apply xm (x :e Y).
   + assume H3: x :e Y.
@@ -184,7 +189,9 @@ apply bijI.
     prove y :e B. exact L2.
   + assume H3: x /:e Y.
     admit. (** fill in this subproof **)
-- let x. assume Hx. let y. assume Hy.
+- prove forall u v :e A, h u = h v -> u = v.  (** h is injective on A. **)
+  let x. assume Hx. let y. assume Hy.
+  prove h x = h y -> x = y.
   prove (if x :e Y then inv B g x else f x)
       = (if y :e Y then inv B g y else f y)
      -> x = y.
@@ -259,12 +266,14 @@ apply bijI.
     * { assume H4: y /:e Y.
         admit. (** fill in this subproof **)
       }
-- let w. assume Hw: w :e B.
+- prove forall w :e B, exists u :e A, h u = w.  (** h is surjective. **)
+  let w. assume Hw: w :e B.
   apply xm (w :e {f x|x :e A :\: Y}).
   + assume H3: w :e {f x|x :e A :\: Y}.
     prove exists u :e A, h u = w.
     apply ReplE_impred (A :\: Y) f w H3.
-    let x. assume H4: x :e A :\: Y.
+    let x.
+    assume H4: x :e A :\: Y.
     assume H5: w = f x.
     apply setminusE A Y x H4.
     assume H6: x :e A.
@@ -272,7 +281,8 @@ apply bijI.
     prove exists u :e A, h u = w.
     witness x. apply andI.
     * exact H6.
-    * prove (if x :e Y then inv B g x else f x) = w.
+    * prove h x = w.
+      prove (if x :e Y then inv B g x else f x) = w.
       rewrite If_i_0 (x :e Y) (inv B g x) (f x) H7.
       symmetry. exact H5.
   + assume H3: w /:e {f x|x :e A :\: Y}.

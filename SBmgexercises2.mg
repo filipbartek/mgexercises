@@ -98,6 +98,7 @@ Theorem KnasterTarski_set: forall A, forall Phi:set->set,
 let A Phi.
 assume H1: forall U :e Power A, Phi U :e Power A.
 assume H2: forall U V :e Power A, U c= V -> Phi U c= Phi V.
+prove exists Y :e Power A, Phi Y = Y.
 set Y : set := {u :e A|forall X :e Power A, Phi X c= X -> u :e X}.
 claim L1: Y :e Power A.
 { apply Sep_In_Power. }
@@ -120,11 +121,14 @@ claim L4: Phi Y c= Y.
 }
 prove exists Y :e Power A, Phi Y = Y.
 witness Y.
+prove Y :e Power A /\ Phi Y = Y.
 apply andI.
 - exact L1.
 - apply set_ext.
-  + exact L4.
+  + prove Phi Y c= Y.
+    exact L4.
   + prove Y c= Phi Y. apply L3.
     * prove Phi Y :e Power A. exact L2.
-    * admit. (** fill in this subproof **)
+    * prove Phi (Phi Y) c= Phi Y.
+      admit. (** fill in this subproof **)
 Qed.
