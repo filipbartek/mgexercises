@@ -58,7 +58,9 @@ Axiom setminusI:forall X Y z, (z :e X) -> (z /:e Y) -> z :e X :\: Y.
 Axiom setminusE:forall X Y z, (z :e X :\: Y) -> z :e X /\ z /:e Y.
 Axiom setminusE1:forall X Y z, (z :e X :\: Y) -> z :e X.
 
-Theorem setminus_antimonotone : forall A U V, U c= V -> A :\: V c= A :\: U.
+Theorem setminus_antimonotone : forall A U V,
+   U c= V
+-> A :\: V c= A :\: U.
 Admitted.
 
 Parameter Repl : set -> (set -> set) -> set.
@@ -68,7 +70,9 @@ Axiom ReplI : forall A:set, forall F:set->set, forall x:set, x :e A -> F x :e {F
 Axiom ReplE : forall A:set, forall F:set->set, forall y:set, y :e {F x|x :e A} -> exists x :e A, y = F x.
 Axiom ReplE_impred : forall A:set, forall F:set->set, forall y:set, y :e {F x|x :e A} -> forall p:prop, (forall x:set, x :e A -> y = F x -> p) -> p.
 
-Theorem image_monotone : forall f:set -> set, forall U V, U c= V -> {f x|x :e U} c= {f x|x :e V}.
+Theorem image_monotone : forall f:set -> set, forall U V,
+   U c= V
+-> {f x|x :e U} c= {f x|x :e V}.
 Admitted.
 
 (* Unicode Power "1D4AB" *)
@@ -77,7 +81,9 @@ Parameter Power : set->set.
 Axiom PowerI : forall X Y:set, Y c= X -> Y :e Power X.
 Axiom PowerE : forall X Y:set, Y :e Power X -> Y c= X.
 
-Theorem image_In_Power : forall A B, forall f:set -> set, (forall x :e A, f x :e B) -> forall U :e Power A, {f x|x :e U} :e Power B.
+Theorem image_In_Power : forall A B, forall f:set -> set,
+   (forall x :e A, f x :e B)
+-> forall U :e Power A, {f x|x :e U} :e Power B.
 Admitted.
 
 (* Parameter Sep "f7e63d81e8f98ac9bc7864e0b01f93952ef3b0cbf9777abab27bcbd743b6b079" "f336a4ec8d55185095e45a638507748bac5384e04e0c48d008e4f6a9653e9c44" *)
@@ -96,8 +102,11 @@ Theorem KnasterTarski_set: forall A, forall Phi:set->set,
  -> (forall U V :e Power A, U c= V -> Phi U c= Phi V)
  -> exists Y :e Power A, Phi Y = Y.
 let A Phi.
+(** Phi maps subsets of A to subsets of A. **)
 assume H1: forall U :e Power A, Phi U :e Power A.
+(** Phi is monotone. **)
 assume H2: forall U V :e Power A, U c= V -> Phi U c= Phi V.
+(** Phi has a fixpoint. **)
 prove exists Y :e Power A, Phi Y = Y.
 set Y : set := {u :e A|forall X :e Power A, Phi X c= X -> u :e X}.
 claim L1: Y :e Power A.
@@ -114,10 +123,27 @@ claim L3: forall X :e Power A, Phi X c= X -> Y c= X.
   exact L3a X HX H3.
 }
 claim L4: Phi Y c= Y.
-{ let u. assume H3: u :e Phi Y. prove u :e Y.
+{ let u.
+  assume H3: u :e Phi Y.
+  prove u :e Y.
   apply SepI.
   - prove u :e A. exact PowerE A (Phi Y) L2 u H3.
-  - admit. (** fill in this subproof **)
+  - prove forall X :e Power A, Phi X c= X -> u :e X.
+    let X.
+    assume HX: X :e Power A.
+    assume Hpfp: Phi X c= X.
+    prove u :e X.
+    claim LPYX: Phi Y c= Phi X.
+    {
+      apply H2 Y L1 X HX.
+      prove Y c= X.
+      exact L3 X HX Hpfp.
+    }
+    apply Hpfp.
+    prove u :e Phi X.
+    apply LPYX.
+    prove u :e Phi Y.
+    exact H3.
 }
 prove exists Y :e Power A, Phi Y = Y.
 witness Y.
@@ -130,5 +156,5 @@ apply andI.
   + prove Y c= Phi Y. apply L3.
     * prove Phi Y :e Power A. exact L2.
     * prove Phi (Phi Y) c= Phi Y.
-      admit. (** fill in this subproof **)
+      exact H2 (Phi Y) L2 Y L1 L4.
 Qed.
