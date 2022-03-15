@@ -1,0 +1,108 @@
+Definition True : prop := forall p:prop, p -> p.
+Definition False : prop := forall p:prop, p.
+
+Definition not : prop -> prop := fun A:prop => A -> False.
+
+(* Unicode ~ "00ac" *)
+Prefix ~ 700 := not.
+
+Definition and : prop -> prop -> prop := fun A B:prop => forall p:prop, (A -> B -> p) -> p.
+
+(* Unicode /\ "2227" *)
+Infix /\ 780 left := and.
+
+Axiom andI : forall (A B : prop), A -> B -> A /\ B.
+
+Definition or : prop -> prop -> prop := fun A B:prop => forall p:prop, (A -> p) -> (B -> p) -> p.
+
+(* Unicode \/ "2228" *)
+Infix \/ 785 left := or.
+
+Axiom xm : forall P:prop, P \/ ~P.
+
+Section Eq.
+Variable A:SType.
+Definition eq : A->A->prop := fun x y:A => forall Q:A->A->prop, Q x y -> Q y x.
+End Eq.
+
+Infix = 502 := eq.
+
+Section Ex.
+Variable A:SType.
+Definition ex : (A->prop)->prop := fun Q:A->prop => forall P:prop, (forall x:A, Q x -> P) -> P.
+End Ex.
+
+(* Unicode exists "2203" *)
+
+Parameter In:set->set->prop.
+
+Definition Subq : set -> set -> prop := fun A B => forall x :e A, x :e B.
+
+Binder+ exists , := ex; and.
+
+Axiom set_ext : forall X Y:set, X c= Y -> Y c= X -> X = Y.
+
+Definition nIn : set->set->prop :=
+fun x X => ~In x X.
+
+(* Unicode /:e "2209" *)
+Infix /:e 502 := nIn.
+
+(* Parameter setminus "cc569397a7e47880ecd75c888fb7c5512aee4bcb1e7f6bd2c5f80cccd368c060" "c68e5a1f5f57bc5b6e12b423f8c24b51b48bcc32149a86fc2c30a969a15d8881" *)
+Parameter setminus:set->set->set.
+
+(* Unicode :\: "2216" *)
+Infix :\: 350 := setminus.
+
+Axiom setminusI:forall X Y z, (z :e X) -> (z /:e Y) -> z :e X :\: Y.
+Axiom setminusE:forall X Y z, (z :e X :\: Y) -> z :e X /\ z /:e Y.
+Axiom setminusE1:forall X Y z, (z :e X :\: Y) -> z :e X.
+
+Theorem setminus_antimonotone : forall A U V, U c= V -> A :\: V c= A :\: U.
+let A U V. assume HUV.
+let x. assume Hx. apply setminusE A V x Hx.
+assume H1 H2. apply setminusI.
+- exact H1.
+- assume H3: x :e U.
+  apply H2.
+  prove x :e V.
+  exact HUV x H3.
+Qed.
+
+Parameter Repl : set -> (set -> set) -> set.
+Notation Repl Repl.
+
+Axiom ReplI : forall A:set, forall F:set->set, forall x:set, x :e A -> F x :e {F x|x :e A}.
+Axiom ReplE : forall A:set, forall F:set->set, forall y:set, y :e {F x|x :e A} -> exists x :e A, y = F x.
+Axiom ReplE_impred : forall A:set, forall F:set->set, forall y:set, y :e {F x|x :e A} -> forall p:prop, (forall x:set, x :e A -> y = F x -> p) -> p.
+
+Theorem image_monotone : forall f:set -> set, forall U V, U c= V -> {f x|x :e U} c= {f x|x :e V}.
+let f U V.
+assume HUV: U c= V.
+let y.
+assume Hy: y :e {f x|x :e U}.
+prove y :e {f x|x :e V}.
+apply ReplE_impred U f y Hy.
+let x.
+assume Hx: x :e U.
+assume H1: y = f x.
+prove y :e {f x|x :e V}.
+rewrite H1.
+prove f x :e {f x|x :e V}.
+admit. (** fill in the rest of this proof **)
+Qed.
+
+(* Unicode Power "1D4AB" *)
+Parameter Power : set->set.
+
+Axiom PowerI : forall X Y:set, Y c= X -> Y :e Power X.
+Axiom PowerE : forall X Y:set, Y :e Power X -> Y c= X.
+
+Theorem image_In_Power : forall A B, forall f:set -> set, (forall x :e A, f x :e B) -> forall U :e Power A, {f x|x :e U} :e Power B.
+let A B f. assume Hf.
+let U. assume HU: U :e Power A.
+prove {f x|x :e U} :e Power B.
+apply PowerI.
+prove {f x|x :e U} c= B.
+admit. (** fill in the rest of this proof **)
+Qed.
