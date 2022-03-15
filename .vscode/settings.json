@@ -1,5 +1,8 @@
 {
     "megalodon": {
         "owned": "ownedNov022021"
+    },
+    "files.associations": {
+        "*.mg": "coq"
     }
 }
