@@ -160,7 +160,11 @@ claim L2: forall U V :e Power A, U c= V -> Phi U c= Phi V.
   prove B :\: {f x|x :e A :\: U} c= B :\: {f x|x :e A :\: V}.
   apply setminus_antimonotone.
   prove {f x|x :e A :\: V} c= {f x|x :e A :\: U}.
-  admit. (** fill in this subproof **)
+  apply image_monotone.
+  prove A :\: V c= A :\: U.
+  apply setminus_antimonotone.
+  prove U c= V.
+  exact HUV.
 }
 apply KnasterTarski_set A Phi L1 L2.
 let Y. assume HY. apply HY.
